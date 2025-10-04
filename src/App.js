@@ -8,6 +8,7 @@ import QualityControl from "./pages/QualityControl";
 import DistributorDashboard from "./pages/DitributorDash";
 import RetailerDashboard from "./pages/Retailer";
 
+
 function App() {
   return (
     <Router>
