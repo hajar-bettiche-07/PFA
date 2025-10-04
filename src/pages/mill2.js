@@ -82,23 +82,20 @@ export default function MillOperatorDashboard() {
             margin: "0 auto",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-10-04%20%C3%A0%2021.28.23_3da5555a-oeviOe6rZHzTHhT0qcZIy9XYCIJcft.jpg"
-              alt="Olivium Logo"
-              style={{ width: "40px", height: "40px" }}
-            />
-            <span
-              style={{
-                color: "white",
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                fontFamily: "Georgia, serif",
-              }}
-            >
-              𝐎𝐥𝐢𝐯𝐢𝐮𝐦
-            </span>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-10-04%20%C3%A0%2021.28.23_3da5555a-oeviOe6rZHzTHhT0qcZIy9XYCIJcft.jpg"
+            alt="Olivium Logo"
+            style={{ width: "40px", height: "40px", cursor: "pointer" }}
+            onClick={() => window.location.href = '/'}
+          />
+          <span
+            style={{ color: "white", fontSize: "1.5rem", fontWeight: "bold", fontFamily: "serif", cursor: "pointer" }}
+            onClick={() => window.location.href = '/'}
+          >
+            𝐎𝐥𝐢𝐯𝐢𝐮𝐦
+          </span>
+        </div>
 
           <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
             <a href="#" style={{ color: "white", textDecoration: "none" }}>

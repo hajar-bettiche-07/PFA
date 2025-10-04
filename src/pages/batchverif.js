@@ -123,28 +123,6 @@ export default function VerifyBatch() {
       
       <div style={{ minHeight: "100vh", backgroundColor: "#f5f5dc" }}>
         {/* Navigation */}
-        <Navbar expand="lg" className="px-4 py-3 shadow-sm" style={{ backgroundColor: "#2d5016" }}>
-          <Navbar.Brand href="#" className="d-flex align-items-center gap-2">
-            <img 
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-OyWTluWJsXSyObRFIELNPfNTkOUjf0.png" 
-              alt="Olivium Logo" 
-              className="olivium-logo"
-            />
-            <span style={{ fontSize: "1.8rem", color: "#FFFFFF", fontWeight: "bold" }}>Olivium</span>
-          </Navbar.Brand>
-          <Navbar.Toggle />
-          <Navbar.Collapse className="justify-content-end">
-            <Nav className="me-auto d-none d-md-flex gap-4">
-              <Nav.Link href="#" style={{ color: "#FFFFFF" }}>Features</Nav.Link>
-              <Nav.Link href="#" style={{ color: "#FFFFFF" }}>How It Works</Nav.Link>
-              <Nav.Link href="#" style={{ color: "#FFFFFF" }}>FAQ</Nav.Link>
-            </Nav>
-            <Button className="wallet-btn">
-              <Wallet size={18} className="me-2" />
-              Connect Wallet
-            </Button>
-          </Navbar.Collapse>
-        </Navbar>
 
         {/* Main Content */}
         <Container className="py-5">
