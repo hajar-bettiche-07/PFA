@@ -54,8 +54,12 @@ export default function DistributorDashboard() {
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-OyWTluWJsXSyObRFIELNPfNTkOUjf0.png"
               alt="Olivium Logo"
-              style={{ width: "40px", height: "40px", cursor: "pointer" }}
-              onClick={() => window.location.href = '/'}
+              style={{
+              width: "40px",
+              height: "40px",
+              cursor: "pointer",
+              filter: "brightness(0) invert(1)", // Makes the logo white
+            }}              onClick={() => window.location.href = '/'}
             />
             <span
               style={{ color: "white", fontSize: "1.5rem", fontWeight: "bold", fontFamily: "serif", cursor: "pointer" }}
