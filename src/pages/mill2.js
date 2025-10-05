@@ -84,7 +84,7 @@ export default function MillOperatorDashboard() {
         >
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-10-04%20%C3%A0%2021.28.23_3da5555a-oeviOe6rZHzTHhT0qcZIy9XYCIJcft.jpg"
+            src="https://i.postimg.cc/3rFcFysG/Whats-App-20-Image-202025-10-04-20-C3-A0-2021-28-23-3da5555a-removebg-preview.png"
             alt="Olivium Logo"
             style={{ width: "40px", height: "40px", cursor: "pointer" }}
             onClick={() => window.location.href = '/'}
