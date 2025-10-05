@@ -52,7 +52,7 @@ export default function DistributorDashboard() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <img
-              src="https://i.postimg.cc/3rFcFysG/Whats-App-20-Image-202025-10-04-20-C3-A0-2021-28-23-3da5555a-removebg-preview.png"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-OyWTluWJsXSyObRFIELNPfNTkOUjf0.png"
               alt="Olivium Logo"
               style={{ width: "40px", height: "40px", cursor: "pointer" }}
               onClick={() => window.location.href = '/'}
