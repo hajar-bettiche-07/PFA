@@ -197,7 +197,7 @@ function Home() {
           </Card.Title>
           <Card.Body className="p-0">
             <div className="welcome-text">
-              Olivium is a blockchain-powered web application that brings trust, traceability, and authenticity to every bottle of olive oil...
+              Olivium is a blockchain-powered web application that brings trust, traceability, and authenticity to every bottle of olive oil. By recording every step of the supply chain from olive harvesting to bottling and distribution on a secure, decentralized ledger, Olivium ensures that the information you see is accurate, tamper-proof, and fully verifiable. Whether you're a farmer, distributor, or a conscious consumer, Olivium empowers you to trace the origin, quality, and journey of the olive oil you use every day. Discover the story behind every drop and trust what you taste.
             </div>
 
             {/* Verify Batch */}
