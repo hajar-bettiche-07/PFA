@@ -5,8 +5,9 @@ import pic1 from '../assets/images/pic1.png';
 import { HiOutlineQrcode } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import wallet from '../iota'; // ✅ Import mock wallet (see src/iota.js below)
 
-// CSS styles (same as before)
+// CSS styles
 const styles = `
 :root {
   --olive-green: #2d5016;
@@ -94,11 +95,32 @@ body {
 function Home() {
   const navigate = useNavigate();
   const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
   const [role, setRole] = useState(localStorage.getItem('userRole') || '');
 
-  const handleConnectWallet = () => {
+  // ✅ Connect mock wallet
+const handleConnectWallet = async () => {
+  try {
+    console.log("Connecting wallet...");
+    const result = await wallet.connect();
+    console.log("Wallet result:", result);
     setWalletConnected(true);
-    alert('Wallet connected! Now select your role.');
+    setWalletAddress(result.address);
+    alert(`Wallet connected!\nMock Address:\n${result.address}`);
+  } catch (error) {
+    console.error('Wallet connection failed:', error);
+    alert('Failed to connect wallet. See console for details.');
+  }
+};
+
+
+  const handleDisconnectWallet = async () => {
+    await wallet.disconnect();
+    setWalletConnected(false);
+    setWalletAddress('');
+    localStorage.removeItem('userRole');
+    setRole('');
+    alert('Wallet disconnected!');
   };
 
   const handleRoleSelect = (e) => {
@@ -106,7 +128,6 @@ function Home() {
     setRole(selectedRole);
     localStorage.setItem('userRole', selectedRole);
 
-    // Redirect to correct page
     switch (selectedRole) {
       case 'farmer':
         navigate('/dashboard');
@@ -164,14 +185,26 @@ function Home() {
               <Nav.Link href="#how-it-works">How It Works</Nav.Link>
               <Nav.Link href="#faq">FAQ</Nav.Link>
             </Nav>
-            <Button
-              className="connect-wallet-btn"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-              onClick={handleConnectWallet}
-            >
-              <Icon.Wallet size={18} />
-              {walletConnected ? 'Wallet Connected' : 'Connect Wallet'}
-            </Button>
+
+            {walletConnected ? (
+              <Button
+                className="connect-wallet-btn"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                onClick={handleDisconnectWallet}
+              >
+                <Icon.Wallet size={18} />
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                className="connect-wallet-btn"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                onClick={handleConnectWallet}
+              >
+                <Icon.Wallet size={18} />
+                Connect Wallet
+              </Button>
+            )}
           </Container>
         </Navbar>
 
@@ -197,7 +230,7 @@ function Home() {
           </Card.Title>
           <Card.Body className="p-0">
             <div className="welcome-text">
-              Olivium is a blockchain-powered web application that brings trust, traceability, and authenticity to every bottle of olive oil. By recording every step of the supply chain from olive harvesting to bottling and distribution on a secure, decentralized ledger, Olivium ensures that the information you see is accurate, tamper-proof, and fully verifiable. Whether you're a farmer, distributor, or a conscious consumer, Olivium empowers you to trace the origin, quality, and journey of the olive oil you use every day. Discover the story behind every drop and trust what you taste.
+              Olivium is a blockchain-powered web application that brings trust, traceability, and authenticity to every bottle of olive oil. By recording every step of the supply chain from olive harvesting to bottling and distribution on a secure, decentralized ledger, Olivium ensures that the information you see is accurate, tamper-proof, and fully verifiable.
             </div>
 
             {/* Verify Batch */}
@@ -217,7 +250,7 @@ function Home() {
               Verify a Batch
             </Button>
 
-            {/* Role Selection (only if wallet connected) */}
+            {/* Role Selection */}
             {walletConnected && (
               <div style={{ marginTop: '40px' }}>
                 <h4>Select Your Role:</h4>
@@ -239,6 +272,13 @@ function Home() {
                   <option value="distributor">Distributor</option>
                   <option value="retailer">Retailer</option>
                 </Form.Select>
+
+                {/* Show mock wallet address */}
+                {walletAddress && (
+                  <div style={{ marginTop: '15px', fontSize: '0.9rem', color: '#555' }}>
+                    Connected as: <code>{walletAddress}</code>
+                  </div>
+                )}
               </div>
             )}
           </Card.Body>
