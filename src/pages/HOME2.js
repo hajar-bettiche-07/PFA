@@ -5,7 +5,6 @@ import * as Icon from 'react-bootstrap-icons';
 import { HiOutlineQrcode } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import pic1 from '../assets/images/pic1.png';
-import wallet from '../iota';
 
 // Wallet logos
 import IotaLogo from '../assets/images/iota.png';
@@ -16,52 +15,72 @@ import CoinbaseLogo from '../assets/images/coinbase.webp';
 function Home() {
   const navigate = useNavigate();
   const [walletConnected, setWalletConnected] = useState(false);
-  const [role, setRole] = useState(localStorage.getItem('userRole') || '');
+  const [role, setRole] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const [walletAddress, setWalletAddress] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectedAddress, setConnectedAddress] = useState('');
+  const [connectedRole, setConnectedRole] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // ✅ Each role has its own valid IOTA address (mock authentication)
+  const validAddresses = {
+    Farmer: ['IOTA-FARMER-001', 'IOTA-FARMER-002'],
+    Mill: ['IOTA-MILL-001'],
+    'Quality Control': ['IOTA-QUALITY-001'],
+    Distributor: ['IOTA-DIST-001'],
+    Retailer: ['IOTA-RETAIL-001'],
+  };
 
   const handleConnectClick = () => setShowModal(true);
 
   const handleConnectWallet = async () => {
+    setErrorMessage('');
+
     if (!selectedWallet) return alert('Please select a wallet first.');
-    if (selectedWallet === 'IOTA Wallet' && !walletAddress)
-      return alert('Please enter your IOTA wallet address.');
-
-    try {
-      setIsConnecting(true);
-      setTimeout(() => {
-        if (selectedWallet !== 'IOTA Wallet') {
-          alert(`${selectedWallet} support coming soon!`);
-          setIsConnecting(false);
-          return;
-        }
-        setWalletConnected(true);
-        setIsConnecting(false);
-        setShowModal(false);
-        alert(`Connected!\nWallet: ${selectedWallet}\nAddress: ${walletAddress}`);
-      }, 2000);
-    } catch (err) {
-      console.error('Wallet connection failed:', err);
-      setIsConnecting(false);
-      alert('Failed to connect wallet.');
+    if (selectedWallet !== 'IOTA Wallet') {
+      alert(`${selectedWallet} is not supported yet.`);
+      return;
     }
-  };
+    if (!walletAddress) {
+      setErrorMessage('Please enter your IOTA wallet address.');
+      return;
+    }
+    if (!role) {
+      setErrorMessage('Please select your role.');
+      return;
+    }
 
-  const handleRoleSelect = (e) => {
-    const selectedRole = e.target.value;
-    setRole(selectedRole);
-    localStorage.setItem('userRole', selectedRole);
+    // Validate wallet against role
+    const isValidAddress = validAddresses[role]?.includes(walletAddress.trim());
+    if (!isValidAddress) {
+      setErrorMessage('❌ Invalid wallet address for selected role.');
+      return;
+    }
 
-    const routes = {
-      farmer: '/dashboard',
-      mill: '/mill',
-      quality: '/quality',
-      distributor: '/distributor',
-      retailer: '/retailer',
-    };
-    if (routes[selectedRole]) navigate(routes[selectedRole]);
+    // Simulate loading
+    setIsConnecting(true);
+    setTimeout(() => {
+      setWalletConnected(true);
+      setConnectedAddress(walletAddress);
+      setConnectedRole(role);
+      setIsConnecting(false);
+      setShowModal(false);
+
+      alert(`✅ Connected as ${role}\nWallet: ${walletAddress}`);
+
+      // Save role for persistence and redirect
+      localStorage.setItem('userRole', role);
+      const routes = {
+        Farmer: '/dashboard',
+        Mill: '/mill',
+        'Quality Control': '/quality',
+        Distributor: '/distributor',
+        Retailer: '/retailer',
+      };
+      navigate(routes[role]);
+    }, 2000);
   };
 
   const handleVerifyBatch = () => navigate('/batchverif');
@@ -75,7 +94,6 @@ function Home() {
 
   return (
     <>
-      {/* STYLES */}
       <style>{`
         body { font-family: 'Segoe UI', sans-serif; background-color: #f5f5dc; }
         .navbar-custom {
@@ -119,8 +137,8 @@ function Home() {
           border: 2px solid #9de82c;
           background: #2b2b2b;
         }
-        .wallet-option img { width: 38px; height: 38px; }
 
+        .wallet-option img { width: 38px; height: 38px; }
         .wallet-info { display: flex; flex-direction: column; gap: 5px; }
         .wallet-name { font-weight: 600; font-size: 1.1rem; }
         .wallet-desc { font-size: 0.9rem; color: #c0c0c0; }
@@ -138,6 +156,12 @@ function Home() {
         .connect-btn:hover {
           background-color: #8bc926 !important;
           transform: translateY(-1px);
+        }
+
+        .error-text {
+          color: #ff6666;
+          margin-top: 8px;
+          font-size: 0.9rem;
         }
 
         .wallet-grid {
@@ -164,10 +188,7 @@ function Home() {
           padding: 10px 12px;
           margin-top: 10px;
         }
-        .selected-wallet-box img {
-          width: 30px;
-          height: 30px;
-        }
+        .selected-wallet-box img { width: 30px; height: 30px; }
       `}</style>
 
       {/* NAVBAR */}
@@ -231,29 +252,10 @@ function Home() {
 
             {walletConnected && (
               <div style={{ marginTop: '40px' }}>
-                <h4>Select Your Role:</h4>
-                <Form.Select
-                  value={role}
-                  onChange={handleRoleSelect}
-                  style={{
-                    width: '300px', fontSize: '1rem', marginTop: '10px',
-                    borderRadius: '8px', padding: '10px',
-                  }}
-                >
-                  <option value="">-- Choose Role --</option>
-                  <option value="farmer">Farmer</option>
-                  <option value="mill">Mill</option>
-                  <option value="quality">Quality Control</option>
-                  <option value="distributor">Distributor</option>
-                  <option value="retailer">Retailer</option>
-                </Form.Select>
-
-                {/* Connected Wallet Address */}
-                <div style={{ marginTop: '20px', color: '#2d5016', fontWeight: '500' }}>
-                  <Icon.WalletFill /> Connected Wallet:{' '}
-                  <span style={{ color: '#627d33ff' }}>
-                    {walletAddress || 'N/A'}
-                  </span>
+                <h4>✅ Connected Successfully</h4>
+                <div style={{ marginTop: '10px', fontSize: '1.1rem', color: '#2d5016' }}>
+                  <Icon.WalletFill /> <b>Wallet:</b> {connectedAddress}<br />
+                  <Icon.PersonBadge /> <b>Role:</b> {connectedRole}
                 </div>
               </div>
             )}
@@ -268,7 +270,7 @@ function Home() {
         </Modal.Header>
         <Modal.Body>
           <div className="wallet-grid">
-            {/* LEFT SIDE — WALLET OPTIONS */}
+            {/* LEFT SIDE */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {wallets.map((w) => (
                 <div
@@ -285,44 +287,37 @@ function Home() {
               ))}
             </div>
 
-            {/* RIGHT SIDE — ADDRESS INPUT */}
+            {/* RIGHT SIDE */}
             <div className="right-panel">
-              <div>
-                <Form.Label>Wallet Address</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder={
-                    selectedWallet === 'IOTA Wallet'
-                      ? 'Enter IOTA wallet address...'
-                      : 'Address input available only for IOTA Wallet'
-                  }
-                  value={walletAddress}
-                  onChange={(e) => setWalletAddress(e.target.value)}
-                  style={{ backgroundColor: '#1e1e1e', color: 'white', border: '1px solid #333' }}
-                  disabled={selectedWallet !== 'IOTA Wallet'}
-                />
-                <div style={{ marginTop: '20px' }}>
-                  <Form.Label>Selected Wallet</Form.Label>
-                  <div className="selected-wallet-box">
-                    {selectedWallet ? (
-                      <>
-                        <img
-                          src={wallets.find(w => w.name === selectedWallet)?.logo}
-                          alt={selectedWallet}
-                        />
-                        <div>
-                          <div style={{ fontWeight: '600' }}>{selectedWallet}</div>
-                          <div style={{ fontSize: '0.85rem', color: '#bbb' }}>
-                            {wallets.find(w => w.name === selectedWallet)?.description}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div style={{ color: '#888' }}>No wallet selected</div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <Form.Label>Wallet Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder={
+                  selectedWallet === 'IOTA Wallet'
+                    ? 'Enter your IOTA wallet address...'
+                    : 'Only IOTA Wallet is supported'
+                }
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+                style={{ backgroundColor: '#1e1e1e', color: 'white', border: '1px solid #333' }}
+                disabled={selectedWallet !== 'IOTA Wallet'}
+              />
+
+              <Form.Label style={{ marginTop: '20px' }}>Select Your Role</Form.Label>
+              <Form.Select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                style={{ backgroundColor: '#1e1e1e', color: 'white', border: '1px solid #333' }}
+              >
+                <option value="">-- Choose Role --</option>
+                <option value="Farmer">Farmer</option>
+                <option value="Mill">Mill</option>
+                <option value="Quality Control">Quality Control</option>
+                <option value="Distributor">Distributor</option>
+                <option value="Retailer">Retailer</option>
+              </Form.Select>
+
+              {errorMessage && <div className="error-text">{errorMessage}</div>}
 
               <Button
                 className="connect-btn"
