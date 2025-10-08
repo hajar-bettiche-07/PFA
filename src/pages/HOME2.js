@@ -1,13 +1,13 @@
 import '../App.css';
 import React, { useState } from 'react';
-import { Navbar, Container, Nav, Button, Image, Card, Form, Modal } from 'react-bootstrap';
+import { Navbar, Container, Nav, Button, Image, Card, Form, Modal, Spinner } from 'react-bootstrap';
 import * as Icon from 'react-bootstrap-icons';
 import { HiOutlineQrcode } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import pic1 from '../assets/images/pic1.png';
 import wallet from '../iota';
 
-// Wallet logos (ensure these exist in /src/assets/images)
+// Wallet logos
 import IotaLogo from '../assets/images/iota.png';
 import MetaMaskLogo from '../assets/images/metamask.png';
 import WalletConnectLogo from '../assets/images/walletconnect.png';
@@ -20,20 +20,31 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const [walletAddress, setWalletAddress] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const handleConnectClick = () => setShowModal(true);
 
   const handleConnectWallet = async () => {
-    try {
-      if (!selectedWallet) return alert('Please select a wallet first.');
-      if (selectedWallet === 'IOTA Wallet' && !walletAddress)
-        return alert('Please enter your IOTA wallet address.');
+    if (!selectedWallet) return alert('Please select a wallet first.');
+    if (selectedWallet === 'IOTA Wallet' && !walletAddress)
+      return alert('Please enter your IOTA wallet address.');
 
-      setWalletConnected(true);
-      alert(`Connected!\nWallet: ${selectedWallet}\nAddress: ${walletAddress || 'N/A'}`);
-      setShowModal(false);
+    try {
+      setIsConnecting(true);
+      setTimeout(() => {
+        if (selectedWallet !== 'IOTA Wallet') {
+          alert(`${selectedWallet} support coming soon!`);
+          setIsConnecting(false);
+          return;
+        }
+        setWalletConnected(true);
+        setIsConnecting(false);
+        setShowModal(false);
+        alert(`Connected!\nWallet: ${selectedWallet}\nAddress: ${walletAddress}`);
+      }, 2000);
     } catch (err) {
       console.error('Wallet connection failed:', err);
+      setIsConnecting(false);
       alert('Failed to connect wallet.');
     }
   };
@@ -80,19 +91,11 @@ function Home() {
         }
         .connect-wallet-btn:hover { background-color: #8bc926 !important; }
 
-        /* Modal styling */
         .modal-content {
           background-color: #121212;
           color: white;
           border-radius: 15px;
           border: 1px solid #333;
-        }
-        .modal-header {
-          border-bottom: 1px solid #333;
-        }
-        .modal-title {
-          color: #9de82c;
-          font-weight: bold;
         }
 
         .wallet-option {
@@ -103,9 +106,9 @@ function Home() {
           color: white;
           padding: 12px 18px;
           border-radius: 10px;
-          cursor: pointer;
           transition: all 0.2s ease;
           border: 1px solid transparent;
+          cursor: pointer;
         }
         .wallet-option:hover {
           background: #292929;
@@ -116,25 +119,11 @@ function Home() {
           border: 2px solid #9de82c;
           background: #2b2b2b;
         }
-        .wallet-option img {
-          width: 38px;
-          height: 38px;
-        }
+        .wallet-option img { width: 38px; height: 38px; }
 
-        .wallet-info {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .wallet-name {
-          font-weight: 600;
-          font-size: 1.1rem;
-        }
-        .wallet-desc {
-          font-size: 0.9rem;
-          color: #c0c0c0;
-        }
+        .wallet-info { display: flex; flex-direction: column; gap: 5px; }
+        .wallet-name { font-weight: 600; font-size: 1.1rem; }
+        .wallet-desc { font-size: 0.9rem; color: #c0c0c0; }
 
         .connect-btn {
           background-color: #9de82c !important;
@@ -155,9 +144,6 @@ function Home() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 20px;
-        }
-        @media(max-width: 768px){
-          .wallet-grid { grid-template-columns: 1fr; }
         }
 
         .right-panel {
@@ -230,6 +216,7 @@ function Home() {
               Olivium is a blockchain-powered platform that brings transparency and trust to every drop
               of olive oil — connecting farmers, mills, distributors, and retailers through IOTA’s decentralized technology.
             </div>
+
             <Button
               onClick={handleVerifyBatch}
               style={{
@@ -260,6 +247,14 @@ function Home() {
                   <option value="distributor">Distributor</option>
                   <option value="retailer">Retailer</option>
                 </Form.Select>
+
+                {/* Connected Wallet Address */}
+                <div style={{ marginTop: '20px', color: '#2d5016', fontWeight: '500' }}>
+                  <Icon.WalletFill /> Connected Wallet:{' '}
+                  <span style={{ color: '#627d33ff' }}>
+                    {walletAddress || 'N/A'}
+                  </span>
+                </div>
               </div>
             )}
           </Card.Body>
@@ -290,13 +285,17 @@ function Home() {
               ))}
             </div>
 
-            {/* RIGHT SIDE — ADDRESS + SELECTED WALLET */}
+            {/* RIGHT SIDE — ADDRESS INPUT */}
             <div className="right-panel">
               <div>
-                <Form.Label>Type Address</Form.Label>
+                <Form.Label>Wallet Address</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter wallet address..."
+                  placeholder={
+                    selectedWallet === 'IOTA Wallet'
+                      ? 'Enter IOTA wallet address...'
+                      : 'Address input available only for IOTA Wallet'
+                  }
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   style={{ backgroundColor: '#1e1e1e', color: 'white', border: '1px solid #333' }}
@@ -328,10 +327,16 @@ function Home() {
               <Button
                 className="connect-btn"
                 onClick={handleConnectWallet}
-                disabled={!selectedWallet}
+                disabled={!selectedWallet || isConnecting}
                 style={{ marginTop: '20px' }}
               >
-                Connect {selectedWallet || 'Wallet'}
+                {isConnecting ? (
+                  <>
+                    <Spinner animation="border" size="sm" /> Connecting...
+                  </>
+                ) : (
+                  <>Connect {selectedWallet || 'Wallet'}</>
+                )}
               </Button>
             </div>
           </div>
